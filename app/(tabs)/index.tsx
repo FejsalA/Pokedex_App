@@ -5,7 +5,12 @@ import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PokemonList } from '@/components/ui/pokemon-list';
+import { pokemonData } from '@/constants/pokemon';
 import { Link } from 'expo-router';
+import React from 'react';
+import { Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   return (
@@ -78,6 +83,17 @@ export default function HomeScreen() {
   );
 }
 
+export function AllPokemonScreen() {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Text style={styles.title}>All Pokémon</Text>
+      </View>
+      <PokemonList data={pokemonData} />
+    </SafeAreaView>
+  );
+}
+
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
@@ -94,5 +110,22 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFCB05',
+  },
+  header: {
+    paddingTop: 24,
+    paddingBottom: 8,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#2A75BB',
+    textShadowColor: '#3B4CCA',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
 });
