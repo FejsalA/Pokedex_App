@@ -1,16 +1,15 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { fetchPokemonList } from '@/api/pokemon';
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { PokemonList } from '@/components/ui/pokemon-list';
-import { pokemonData } from '@/constants/pokemon';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import React from 'react';
-import { Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from 'react';
 
 export default function HomeScreen() {
   return (
@@ -84,12 +83,30 @@ export default function HomeScreen() {
 }
 
 export function AllPokemonScreen() {
+  const [search, setSearch] = useState('');
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['pokemonList'],
+    queryFn: () => fetchPokemonList(0, 50),
+  });
+
+  const filtered = data?.results.filter(p => p.name.toLowerCase().includes(search.toLowerCase())) || [];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.title}>All Pokémon</Text>
+        <TextInput
+          style={styles.search}
+          placeholder="Search Pokémon"
+          value={search}
+          onChangeText={setSearch}
+        />
       </View>
-      <PokemonList data={pokemonData} />
+      {isLoading && <ActivityIndicator size="large" color="#2A75BB" />}
+      {isError && <Text style={styles.error}>Failed to load Pokémon.</Text>}
+      {!isLoading && !isError && (
+        <PokemonList data={filtered.map(p => ({ id: 0, name: p.name, type: '' }))} />
+      )}
     </SafeAreaView>
   );
 }
@@ -127,5 +144,18 @@ const styles = StyleSheet.create({
     textShadowColor: '#3B4CCA',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
+  },
+  search: {
+    marginTop: 12,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    width: '80%',
+    fontSize: 16,
+  },
+  error: {
+    color: 'red',
+    marginTop: 16,
+    fontWeight: 'bold',
   },
 });
