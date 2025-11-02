@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
+    fontFamily: 'Rubik-Bold',
     color: '#2A75BB',
     textShadowColor: '#3B4CCA',
     textShadowOffset: { width: 2, height: 2 },
@@ -104,11 +105,13 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 24,
     fontWeight: 'bold',
+    fontFamily: 'Rubik-Bold',
     color: '#2A75BB',
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 16,
+    fontFamily: 'Rubik-Regular',
     color: '#3B4CCA',
     textAlign: 'center',
   },

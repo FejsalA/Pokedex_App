@@ -1,8 +1,9 @@
 import { fetchPokemonList } from '@/api/pokemon';
+import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PokemonScreen() {
@@ -19,6 +20,7 @@ export default function PokemonScreen() {
 
   const renderItem = ({ item, index }: { item: { name: string; url: string }; index: number }) => {
     const id = parseInt(item.url.split('/').slice(-2, -1)[0]);
+    const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
     
     return (
       <Pressable
@@ -26,9 +28,19 @@ export default function PokemonScreen() {
         onPress={() => router.push(`/pokemon/${id}`)}
       >
         <View style={styles.cardBg}>
-          <View style={styles.idBadge}>
-            <Text style={styles.idText}>{String(id).padStart(3, '0')}</Text>
+          <View style={styles.cardHeader}>
+            <View style={styles.idBadge}>
+              <Text style={styles.idText}>{String(id).padStart(3, '0')}</Text>
+            </View>
+            <Pressable style={styles.menuButton}>
+              <Ionicons name="ellipsis-vertical" size={20} color="#000" />
+            </Pressable>
           </View>
+          <Image 
+            source={{ uri: imageUrl }} 
+            style={styles.pokemonImage}
+            resizeMode="contain"
+          />
           <Text style={styles.name}>{item.name.charAt(0).toUpperCase() + item.name.slice(1)}</Text>
         </View>
       </Pressable>
@@ -38,15 +50,18 @@ export default function PokemonScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Text style={styles.title}>Pokédex</Text>
-        <TextInput
-          style={styles.search}
-          placeholder="Search Pokémon..."
-          value={search}
-          onChangeText={setSearch}
-        />
+        <Text style={styles.titleHeader}>All Pokémon</Text>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
+          <TextInput
+            style={styles.search}
+            placeholder="Search for Pokémon.."
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
       </View>
-      {isLoading && <ActivityIndicator size="large" color="#2A75BB" style={styles.loader} />}
+      {isLoading && <ActivityIndicator size="large" color="#6C47FF" style={styles.loader} />}
       {isError && <Text style={styles.error}>Failed to load Pokémon.</Text>}
       {!isLoading && !isError && (
         <FlatList
@@ -65,30 +80,37 @@ export default function PokemonScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFCB05', // Pokémon yellow
+    backgroundColor: '#E8EAF6', // Light purple/blue background
   },
   header: {
-    paddingTop: 24,
-    paddingBottom: 8,
-    alignItems: 'center',
+    paddingTop: 8,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#E8EAF6',
   },
-  title: {
-    fontSize: 32,
+  titleHeader: {
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#2A75BB', // Pokémon blue
-    textShadowColor: '#3B4CCA',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
+    fontFamily: 'Rubik-Bold',
+    color: '#1A1A2E',
+    marginBottom: 12,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  searchIcon: {
+    marginRight: 8,
   },
   search: {
-    marginTop: 12,
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    width: '90%',
+    flex: 1,
     fontSize: 16,
-    borderWidth: 2,
-    borderColor: '#2A75BB',
+    fontFamily: 'Rubik-Regular',
+    color: '#000',
   },
   loader: {
     marginTop: 32,
@@ -101,7 +123,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   listContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingBottom: 16,
   },
   row: {
@@ -111,43 +133,49 @@ const styles = StyleSheet.create({
   pokemonCard: {
     flex: 1,
     marginHorizontal: 8,
-    backgroundColor: 'transparent',
-    borderRadius: 16,
-    shadowColor: '#3B4CCA',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 6,
   },
   cardBg: {
-    backgroundColor: '#E0E7FF',
+    backgroundColor: '#fff',
     borderRadius: 16,
-    aspectRatio: 1,
-    justifyContent: 'center',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    marginBottom: 8,
   },
   idBadge: {
     backgroundColor: '#6C47FF',
     borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginBottom: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   idText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontFamily: 'Rubik-Bold',
+    fontSize: 12,
+  },
+  menuButton: {
+    padding: 4,
+  },
+  pokemonImage: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginVertical: 8,
   },
   name: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#2A75BB',
-    marginBottom: 4,
-  },
-  type: {
-    fontSize: 14,
-    color: '#6C47FF',
-    fontWeight: '600',
+    fontFamily: 'Rubik-Bold',
+    color: '#1A1A2E',
+    textAlign: 'center',
   },
 });
